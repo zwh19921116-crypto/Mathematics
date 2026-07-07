@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Factor Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content container">
+      <p class="eyebrow">Mathematics Learning Tool</p>
+      <h1>Factor Explorer</h1>
+      <p class="subtitle">Type one number or two numbers. Results appear automatically.</p>
+    </div>
+  </header>
+
+  <main class="container main-grid app-fit">
+    <section class="card simple-card panel-card" id="inputPanel">
+      <h2>Input Panel</h2>
+      <label for="modeSelect">Input Mode</label>
+      <select id="modeSelect" aria-label="Choose one or two number mode">
+        <option value="one">1 Number</option>
+        <option value="two">2 Numbers</option>
+      </select>
+
+      <div id="oneInputGroup" class="input-group">
+        <label for="singleNumberInput">Type one whole number</label>
+        <input id="singleNumberInput" type="number" min="1" placeholder="e.g. 36" />
+      </div>
+
+      <div id="twoInputGroup" class="input-group hidden">
+        <p class="helper-text">Type both numbers. GCD and LCM appear automatically.</p>
+        <div class="two-inputs">
+          <div>
+            <label for="numA">First number</label>
+            <input id="numA" type="number" min="1" placeholder="e.g. 18" />
+          </div>
+          <div>
+            <label for="numB">Second number</label>
+            <input id="numB" type="number" min="1" placeholder="e.g. 24" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card simple-card panel-card" id="statsPanel">
+      <h2>Stats Panel</h2>
+      <div id="oneOutputGroup">
+        <div id="singleExploreHint" class="result" aria-live="polite">Waiting for a number...</div>
+        <div id="factorResult" class="result" aria-live="polite">Factors will appear here.</div>
+        <div id="primeResult" class="result" aria-live="polite">Prime factorisation will appear here.</div>
+
+        <div id="singleStatsWrap" class="table-wrap hidden" aria-live="polite">
+          <h3>Factor Stats</h3>
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Stat</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="singleStatsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="twoOutputGroup" class="hidden">
+        <div id="gcdLcmResult" class="result" aria-live="polite">Waiting for two numbers...</div>
+
+        <div id="twoStatsWrap" class="table-wrap hidden" aria-live="polite">
+          <h3>Two-Number Stats</h3>
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Stat</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="twoStatsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

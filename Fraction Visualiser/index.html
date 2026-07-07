@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fraction Visualiser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-shape bg-shape-a"></div>
+  <div class="bg-shape bg-shape-b"></div>
+
+  <header class="hero">
+    <p class="kicker">Mathematics Learning Tool</p>
+    <h1>Fraction Visualiser</h1>
+    <p class="hero-text">
+      Build strong fraction foundations with visual models and guided working.
+      Students can see fraction parts, compare values, and practise all four operations.
+    </p>
+    <div class="learning-path" aria-label="Learning path">
+      <span>Read Fractions</span>
+      <span>See Pie Models</span>
+      <span>Solve Step by Step</span>
+      <span>Simplify Answers</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <nav class="menu-tabs" aria-label="Fraction learning menu">
+      <button class="menu-tab active" data-view="how-fractions" type="button">Understanding Fractions</button>
+      <button class="menu-tab" data-view="simplify" type="button">Simplify Fractions</button>
+      <button class="menu-tab" data-view="compare" type="button">Compare Fractions</button>
+      <button class="menu-tab" data-view="solve-2" type="button">Solve 2 Fractions</button>
+      <button class="menu-tab" data-view="solve-3" type="button">Solve 3 Fractions</button>
+      <button class="menu-tab" data-view="mixed-improper" type="button">Mixed and Improper</button>
+      <button class="menu-tab" data-view="decimal-percent" type="button">Decimal and Percentage</button>
+    </nav>
+
+    <section class="card view-panel" id="how-fractions-panel" aria-labelledby="fraction-visualiser-title">
+      <h2 id="fraction-visualiser-title">Understanding Fractions</h2>
+      <p class="card-intro">
+        Enter a fraction to see exactly how many parts are shaded out of the whole.
+      </p>
+
+      <form id="single-fraction-form" class="inline-form" autocomplete="off">
+        <label>
+          Numerator
+          <input id="single-numerator" type="number" min="0" value="3" required />
+        </label>
+        <label>
+          Denominator
+          <input id="single-denominator" type="number" min="1" value="4" required />
+        </label>
+        <button type="submit">Visualise Fraction</button>
+      </form>
+
+      <div class="fraction-anatomy" aria-live="polite">
+        <h3>Top and Bottom of a Fraction</h3>
+        <div class="fraction-stack" role="img" aria-label="Fraction with top numerator and bottom denominator labels">
+          <span id="anatomy-numerator" class="top">3</span>
+          <span class="bar" aria-hidden="true"></span>
+          <span id="anatomy-denominator" class="bottom">4</span>
+        </div>
+        <p>
+          <strong>Top number (Numerator):</strong> how many equal parts are selected.
+        </p>
+        <p>
+          <strong>Bottom number (Denominator):</strong> how many equal parts make one whole.
+        </p>
+      </div>
+
+      <div class="facts" id="single-fraction-facts" aria-live="polite"></div>
+      <label class="chart-toggle chart-toggle-near-visual" for="single-chart-type">
+        Chart Type
+        <select id="single-chart-type" aria-label="Choose chart type for understanding fractions">
+          <option value="pie">Pie Chart</option>
+          <option value="bar">Fraction Bar</option>
+          <option value="number-line">Number Line</option>
+          <option value="area-grid">Area Grid</option>
+        </select>
+      </label>
+      <div id="single-fraction-pies" class="pie-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="card view-panel hidden-panel" id="simplify-panel" aria-labelledby="simplify-panel-title">
+      <h2 id="simplify-panel-title">Simplify Fractions</h2>
+      <p class="card-intro">
+        Practise reducing fractions to their simplest form using common factors.
+      </p>
+
+      <article class="mini-card" aria-labelledby="simplify-title">
+        <h3 id="simplify-title">Simplify Fractions</h3>
+        <p>Find the greatest common factor and divide top and bottom by the same number.</p>
+        <form id="simplify-form" class="mini-form" autocomplete="off">
+          <label>
+            Numerator
+            <input id="simplify-num" type="number" min="0" value="12" required />
+          </label>
+          <label>
+            Denominator
+            <input id="simplify-den" type="number" min="1" value="18" required />
+          </label>
+          <button type="submit">Simplify</button>
+        </form>
+        <div id="simplify-summary" class="facts" aria-live="polite"></div>
+        <ol id="simplify-steps" class="steps" aria-live="polite"></ol>
+      </article>
+    </section>
+
+    <section class="card view-panel hidden-panel" id="compare-panel" aria-labelledby="compare-panel-title">
+      <h2 id="compare-panel-title">Compare Fractions</h2>
+      <p class="card-intro">
+        Practise deciding whether one fraction is greater than, less than, or equal to another.
+      </p>
+
+      <article class="mini-card" aria-labelledby="compare-title">
+        <h3 id="compare-title">Greater Than / Less Than</h3>
+        <p>Compare two fractions by rewriting them with the same denominator.</p>
+        <form id="compare-form" class="operation-form compare-form" autocomplete="off">
+          <div class="fraction-input">
+            <h3>Fraction A</h3>
+            <div class="fraction-editor" role="group" aria-label="Fraction A input">
+              <input id="compare-a-num" type="number" min="0" value="3" required aria-label="Fraction A numerator" />
+              <span class="fraction-line" aria-hidden="true"></span>
+              <input id="compare-a-den" type="number" min="1" value="5" required aria-label="Fraction A denominator" />
+            </div>
+          </div>
+          <div class="fraction-input">
+            <h3>Fraction B</h3>
+            <div class="fraction-editor" role="group" aria-label="Fraction B input">
+              <input id="compare-b-num" type="number" min="0" value="2" required aria-label="Fraction B numerator" />
+              <span class="fraction-line" aria-hidden="true"></span>
+              <input id="compare-b-den" type="number" min="1" value="3" required aria-label="Fraction B denominator" />
+            </div>
+          </div>
+          <button type="submit">Compare</button>
+        </form>
+        <div id="compare-summary" class="facts" aria-live="polite"></div>
+        <ol id="compare-steps" class="steps" aria-live="polite"></ol>
+      </article>
+    </section>
+
+    <section class="card view-panel hidden-panel" id="solve-2-panel" aria-labelledby="operations-title">
+      <h2 id="operations-title">Solve 2 Fractions</h2>
+      <p class="card-intro">
+        Choose an operation and follow the method before viewing the full solution.
+      </p>
+
+      <form id="operation-form" class="operation-form" autocomplete="off">
+        <div class="fraction-input">
+          <h3>First Fraction</h3>
+          <div class="fraction-editor" role="group" aria-label="First fraction input">
+            <input id="a-num" type="number" min="0" value="1" required aria-label="First numerator" />
+            <span class="fraction-line" aria-hidden="true"></span>
+            <input id="a-den" type="number" min="1" value="2" required aria-label="First denominator" />
+          </div>
+        </div>
+
+        <label class="operation-select-label">
+          Operation
+          <select id="operation" aria-label="Choose operation">
+            <option value="add">Add (+)</option>
+            <option value="subtract">Subtract (-)</option>
+            <option value="multiply">Multiply (x)</option>
+            <option value="divide">Divide (÷)</option>
+          </select>
+        </label>
+
+        <div class="fraction-input">
+          <h3>Second Fraction</h3>
+          <div class="fraction-editor" role="group" aria-label="Second fraction input">
+            <input id="b-num" type="number" min="0" value="1" required aria-label="Second numerator" />
+            <span class="fraction-line" aria-hidden="true"></span>
+            <input id="b-den" type="number" min="1" value="3" required aria-label="Second denominator" />
+          </div>
+        </div>
+
+        <button type="submit">Show Steps</button>
+      </form>
+
+      <div id="operation-help" class="operation-help" aria-live="polite"></div>
+      <div id="operation-math-why" class="operation-math-why" aria-live="polite"></div>
+
+      <div id="operation-summary" class="facts" aria-live="polite"></div>
+      <ol id="operation-steps" class="steps" aria-live="polite"></ol>
+
+      <label class="chart-toggle chart-toggle-near-visual" for="solve2-chart-type">
+        Chart Type
+        <select id="solve2-chart-type" aria-label="Choose chart type for solve two fractions">
+          <option value="pie">Pie Chart</option>
+          <option value="bar">Fraction Bar</option>
+          <option value="number-line">Number Line</option>
+          <option value="area-grid">Area Grid</option>
+        </select>
+      </label>
+
+      <div class="compare-area">
+        <div>
+          <h3>Fraction A</h3>
+          <div id="fraction-a-pies" class="pie-grid compact"></div>
+        </div>
+        <div>
+          <h3>Fraction B</h3>
+          <div id="fraction-b-pies" class="pie-grid compact"></div>
+        </div>
+        <div>
+          <h3>Result</h3>
+          <div id="fraction-result-pies" class="pie-grid compact"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card view-panel hidden-panel" id="solve-3-panel" aria-labelledby="solve3-title">
+      <h2 id="solve3-title">Solve 3 Fractions</h2>
+      <p class="card-intro">
+        Solve three fractions with +, -, x, and ÷ using step-by-step working.
+      </p>
+
+      <form id="solve3-form" class="operation-form three-form" autocomplete="off">
+        <div class="fraction-input">
+          <h3>Fraction 1</h3>
+          <div class="fraction-editor" role="group" aria-label="Fraction one input">
+            <input id="c-num" type="number" min="0" value="1" required aria-label="First numerator" />
+            <span class="fraction-line" aria-hidden="true"></span>
+            <input id="c-den" type="number" min="1" value="2" required aria-label="First denominator" />
+          </div>
+        </div>
+
+        <label class="operation-select-label">
+          Operation 1
+          <select id="operation-one" aria-label="Choose first operation">
+            <option value="add">Add (+)</option>
+            <option value="subtract">Subtract (-)</option>
+            <option value="multiply">Multiply (x)</option>
+            <option value="divide">Divide (÷)</option>
+          </select>
+        </label>
+
+        <div class="fraction-input">
+          <h3>Fraction 2</h3>
+          <div class="fraction-editor" role="group" aria-label="Fraction two input">
+            <input id="d-num" type="number" min="0" value="1" required aria-label="Second numerator" />
+            <span class="fraction-line" aria-hidden="true"></span>
+            <input id="d-den" type="number" min="1" value="3" required aria-label="Second denominator" />
+          </div>
+        </div>
+
+        <label class="operation-select-label">
+          Operation 2
+          <select id="operation-two" aria-label="Choose second operation">
+            <option value="add">Add (+)</option>
+            <option value="subtract">Subtract (-)</option>
+            <option value="multiply">Multiply (x)</option>
+            <option value="divide">Divide (÷)</option>
+          </select>
+        </label>
+
+        <div class="fraction-input">
+          <h3>Fraction 3</h3>
+          <div class="fraction-editor" role="group" aria-label="Fraction three input">
+            <input id="e-num" type="number" min="0" value="1" required aria-label="Third numerator" />
+            <span class="fraction-line" aria-hidden="true"></span>
+            <input id="e-den" type="number" min="1" value="4" required aria-label="Third denominator" />
+          </div>
+        </div>
+
+        <button type="submit">Show Steps</button>
+      </form>
+
+      <div id="solve3-help" class="operation-help" aria-live="polite"></div>
+      <div id="solve3-math-why" class="operation-math-why" aria-live="polite"></div>
+
+      <div id="solve3-summary" class="facts" aria-live="polite"></div>
+      <ol id="solve3-steps" class="steps" aria-live="polite"></ol>
+
+      <label class="chart-toggle chart-toggle-near-visual" for="solve3-chart-type">
+        Chart Type
+        <select id="solve3-chart-type" aria-label="Choose chart type for solve three fractions">
+          <option value="pie">Pie Chart</option>
+          <option value="bar">Fraction Bar</option>
+          <option value="number-line">Number Line</option>
+          <option value="area-grid">Area Grid</option>
+        </select>
+      </label>
+
+      <div class="compare-area four-columns">
+        <div>
+          <h3>Fraction 1</h3>
+          <div id="fraction-c-pies" class="pie-grid compact"></div>
+        </div>
+        <div>
+          <h3>Fraction 2</h3>
+          <div id="fraction-d-pies" class="pie-grid compact"></div>
+        </div>
+        <div>
+          <h3>Fraction 3</h3>
+          <div id="fraction-e-pies" class="pie-grid compact"></div>
+        </div>
+        <div>
+          <h3>Result</h3>
+          <div id="fraction-f-result-pies" class="pie-grid compact"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card view-panel hidden-panel" id="mixed-improper-panel" aria-labelledby="mixed-improper-title">
+      <h2 id="mixed-improper-title">Mixed and Improper Fractions</h2>
+      <p class="card-intro">
+        Convert mixed numbers to improper fractions and improper fractions to mixed numbers with clear steps.
+      </p>
+
+      <div class="tool-grid">
+        <article class="mini-card" aria-labelledby="mixed-to-improper-title">
+          <h3 id="mixed-to-improper-title">Mixed to Improper</h3>
+          <p>Multiply whole by denominator, then add numerator.</p>
+          <form id="mixed-to-improper-form" class="mini-form mixed-form" autocomplete="off">
+            <div class="mixed-number-input" role="group" aria-label="Mixed number input">
+              <p class="input-caption">Mixed Number Input</p>
+              <div class="mixed-number-editor">
+                <label class="sr-only" for="mixed-whole">Whole number</label>
+                <input id="mixed-whole" type="number" min="0" value="2" required aria-label="Whole number" />
+
+                <div class="fraction-editor compact-fraction-editor" role="group" aria-label="Fraction part input">
+                  <label class="sr-only" for="mixed-num">Numerator</label>
+                  <input id="mixed-num" type="number" min="0" value="1" required aria-label="Numerator" />
+                  <span class="fraction-line" aria-hidden="true"></span>
+                  <label class="sr-only" for="mixed-den">Denominator</label>
+                  <input id="mixed-den" type="number" min="1" value="3" required aria-label="Denominator" />
+                </div>
+              </div>
+            </div>
+            <button type="submit">Convert</button>
+          </form>
+          <div id="mixed-to-improper-summary" class="facts" aria-live="polite"></div>
+          <ol id="mixed-to-improper-steps" class="steps" aria-live="polite"></ol>
+        </article>
+
+        <article class="mini-card" aria-labelledby="improper-to-mixed-title">
+          <h3 id="improper-to-mixed-title">Improper to Mixed</h3>
+          <p>Divide numerator by denominator to get whole and remainder.</p>
+          <form id="improper-to-mixed-form" class="mini-form improper-form" autocomplete="off">
+            <div class="improper-fraction-input" role="group" aria-label="Improper fraction input">
+              <p class="input-caption">Improper Fraction Input</p>
+              <div class="fraction-editor compact-fraction-editor" role="group" aria-label="Improper fraction numerator and denominator">
+                <label class="sr-only" for="improper-num">Numerator</label>
+                <input id="improper-num" type="number" min="0" value="11" required aria-label="Numerator" />
+                <span class="fraction-line" aria-hidden="true"></span>
+                <label class="sr-only" for="improper-den">Denominator</label>
+                <input id="improper-den" type="number" min="1" value="4" required aria-label="Denominator" />
+              </div>
+            </div>
+            <button type="submit">Convert</button>
+          </form>
+          <div id="improper-to-mixed-summary" class="facts" aria-live="polite"></div>
+          <ol id="improper-to-mixed-steps" class="steps" aria-live="polite"></ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="card view-panel hidden-panel" id="decimal-percent-panel" aria-labelledby="decimal-percent-title">
+      <h2 id="decimal-percent-title">Fraction to Decimal to Percentage</h2>
+      <p class="card-intro">
+        Convert a fraction to a decimal first, then scale by 100 to get a percentage.
+      </p>
+
+      <article class="mini-card" aria-labelledby="fraction-decimal-percent-title">
+        <h3 id="fraction-decimal-percent-title">Conversion Demonstration</h3>
+        <p>Follow each conversion step and see the final equivalent forms.</p>
+        <form id="fraction-convert-form" class="mini-form" autocomplete="off">
+          <label>
+            Numerator
+            <input id="convert-num" type="number" min="0" value="3" required />
+          </label>
+          <label>
+            Denominator
+            <input id="convert-den" type="number" min="1" value="8" required />
+          </label>
+          <button type="submit">Convert</button>
+        </form>
+        <div id="fraction-convert-summary" class="facts" aria-live="polite"></div>
+        <div id="fraction-convert-explain" class="operation-math-why" aria-live="polite"></div>
+        <ol id="fraction-convert-steps" class="steps" aria-live="polite"></ol>
+
+        <div class="percent-grid-block" aria-live="polite">
+          <h4>Percentage Grid (10 x 10)</h4>
+          <p>Each full grid represents 100%. Shaded cells show the percentage value.</p>
+          <div id="fraction-percent-grid" class="percent-grid-wrap"></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">Built for classroom learning and self-study.</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
