@@ -8,10 +8,14 @@ const refreshBtn       = document.getElementById('refreshBtn');
 const printBtn         = document.getElementById('printBtn');
 const fullscreenBtn    = document.getElementById('fullscreenBtn');
 const preview          = document.getElementById('worksheetPreview');
+const previewToolbar   = document.getElementById('previewToolbar');
 const pagination       = document.getElementById('pagination');
 const prevBtn          = document.getElementById('prevBtn');
 const nextBtn          = document.getElementById('nextBtn');
 const pageIndicator    = document.getElementById('pageIndicator');
+const zoomOutBtn       = document.getElementById('zoomOutBtn');
+const zoomResetBtn     = document.getElementById('zoomResetBtn');
+const zoomInBtn        = document.getElementById('zoomInBtn');
 const moduleSelect     = document.getElementById('module');
 const topicSelect      = document.getElementById('topic');
 const denominatorGroup = document.getElementById('denominatorGroup');
@@ -21,6 +25,10 @@ const rangeRow         = document.getElementById('rangeRow');
 const titleInput       = document.getElementById('title');
 const solutionsCheckbox = document.getElementById('solutionsRequired');
 const initialDocumentTitle = document.title;
+const DEFAULT_PREVIEW_ZOOM = 68;
+const MIN_PREVIEW_ZOOM = 40;
+const MAX_PREVIEW_ZOOM = 140;
+const PREVIEW_ZOOM_STEP = 10;
 
 const MODULE_TOPICS = {
   arithmetic: [
@@ -240,6 +248,7 @@ let pageBeforePrint = 0;
 let lastRenderedTitle = '';
 let isFullscreenFallbackActive = false;
 let scrollPositionBeforeFullscreen = 0;
+let previewZoom = DEFAULT_PREVIEW_ZOOM;
 
 moduleSelect.addEventListener('change', () => {
   populateTopics();
@@ -327,12 +336,16 @@ printBtn.addEventListener('click', () => {
 prevBtn.addEventListener('click', () => showPage(currentPage - 1));
 nextBtn.addEventListener('click', () => showPage(currentPage + 1));
 fullscreenBtn.addEventListener('click', toggleFullscreenMode);
+zoomOutBtn.addEventListener('click', () => changePreviewZoom(-PREVIEW_ZOOM_STEP));
+zoomResetBtn.addEventListener('click', resetPreviewZoom);
+zoomInBtn.addEventListener('click', () => changePreviewZoom(PREVIEW_ZOOM_STEP));
 
 window.addEventListener('beforeprint', preparePreviewForPrint);
 window.addEventListener('afterprint', restorePreviewAfterPrint);
 document.addEventListener('fullscreenchange', syncFullscreenUI);
 document.addEventListener('webkitfullscreenchange', syncFullscreenUI);
 
+applyPreviewZoom();
 syncFullscreenUI();
 
 async function toggleFullscreenMode() {
@@ -382,6 +395,36 @@ function setFullscreenFallbackActive(nextValue) {
 
   document.body.style.top = '';
   window.scrollTo(0, scrollPositionBeforeFullscreen);
+}
+
+function changePreviewZoom(delta) {
+  setPreviewZoom(previewZoom + delta);
+}
+
+function resetPreviewZoom() {
+  setPreviewZoom(DEFAULT_PREVIEW_ZOOM);
+}
+
+function setPreviewZoom(nextZoom) {
+  const boundedZoom = Math.max(MIN_PREVIEW_ZOOM, Math.min(MAX_PREVIEW_ZOOM, nextZoom));
+  if (boundedZoom === previewZoom) {
+    return;
+  }
+
+  previewZoom = boundedZoom;
+  applyPreviewZoom();
+}
+
+function applyPreviewZoom() {
+  preview.style.setProperty('--page-zoom', String(previewZoom / 100));
+  zoomResetBtn.textContent = `${previewZoom}%`;
+  zoomOutBtn.disabled = previewZoom <= MIN_PREVIEW_ZOOM;
+  zoomInBtn.disabled = previewZoom >= MAX_PREVIEW_ZOOM;
+}
+
+function syncPreviewToolbar() {
+  const hasPages = allPages.length > 0;
+  previewToolbar.style.display = hasPages ? 'flex' : 'none';
 }
 
 function supportsNativeFullscreen() {
@@ -464,6 +507,7 @@ function renderWorksheetPages(questions) {
   currentPage = 0;
   showPage(0);
   printBtn.disabled = false;
+  syncPreviewToolbar();
 }
 
 function moduleLabel(module) {
@@ -688,6 +732,7 @@ function showPage(index) {
   prevBtn.disabled = index === 0;
   nextBtn.disabled = index === total - 1;
   pagination.style.display = total > 1 ? 'flex' : 'none';
+  syncPreviewToolbar();
 }
 
 function preparePreviewForPrint() {

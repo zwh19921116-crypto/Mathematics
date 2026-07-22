@@ -102,13 +102,21 @@
     </section>
 
     <div class="preview-wrapper">
-      <!-- Pagination controls -->
-      <div class="pagination" id="pagination" style="display:none">
-        <button id="prevBtn" class="btn-page" disabled>&#8592; Prev</button>
-        <span id="pageIndicator">Page 1 of 1</span>
-        <button id="nextBtn" class="btn-page">Next &#8594;</button>
+      <div class="preview-toolbar" id="previewToolbar" style="display:none">
+        <div class="pagination" id="pagination" style="display:none">
+          <button id="prevBtn" class="btn-page" disabled>&#8592; Prev</button>
+          <span id="pageIndicator">Page 1 of 1</span>
+          <button id="nextBtn" class="btn-page">Next &#8594;</button>
+        </div>
+
+        <div class="zoom-controls" id="zoomControls" aria-label="Preview zoom controls">
+          <button id="zoomOutBtn" class="btn-page" type="button" aria-label="Zoom out">-</button>
+          <button id="zoomResetBtn" class="btn-page btn-page-neutral" type="button">100%</button>
+          <button id="zoomInBtn" class="btn-page" type="button" aria-label="Zoom in">+</button>
+        </div>
       </div>
 
+      <!-- Pagination controls -->
       <section class="preview" id="worksheetPreview">
         <p class="placeholder">Your worksheet will appear here after you click <strong>Generate Worksheet</strong>.</p>
       </section>
