@@ -249,6 +249,14 @@ let lastRenderedTitle = '';
 let isFullscreenFallbackActive = false;
 let scrollPositionBeforeFullscreen = 0;
 let previewZoom = DEFAULT_PREVIEW_ZOOM;
+let isPreviewPinching = false;
+let previewPinchStartDistance = 0;
+let previewPinchStartZoom = DEFAULT_PREVIEW_ZOOM;
+let isPreviewDragging = false;
+let previewDragStartX = 0;
+let previewDragStartY = 0;
+let previewDragStartScrollLeft = 0;
+let previewDragStartScrollTop = 0;
 
 moduleSelect.addEventListener('change', () => {
   populateTopics();
@@ -339,6 +347,16 @@ fullscreenBtn.addEventListener('click', toggleFullscreenMode);
 zoomOutBtn.addEventListener('click', () => changePreviewZoom(-PREVIEW_ZOOM_STEP));
 zoomResetBtn.addEventListener('click', resetPreviewZoom);
 zoomInBtn.addEventListener('click', () => changePreviewZoom(PREVIEW_ZOOM_STEP));
+preview.addEventListener('wheel', handlePreviewWheel, { passive: false });
+preview.addEventListener('pointerdown', handlePreviewPointerDown);
+preview.addEventListener('pointermove', handlePreviewPointerMove);
+preview.addEventListener('pointerup', handlePreviewPointerUp);
+preview.addEventListener('pointercancel', handlePreviewPointerUp);
+preview.addEventListener('lostpointercapture', handlePreviewPointerUp);
+preview.addEventListener('touchstart', handlePreviewTouchStart, { passive: false });
+preview.addEventListener('touchmove', handlePreviewTouchMove, { passive: false });
+preview.addEventListener('touchend', handlePreviewTouchEnd, { passive: true });
+preview.addEventListener('touchcancel', handlePreviewTouchEnd, { passive: true });
 
 window.addEventListener('beforeprint', preparePreviewForPrint);
 window.addEventListener('afterprint', restorePreviewAfterPrint);
@@ -422,9 +440,125 @@ function applyPreviewZoom() {
   zoomInBtn.disabled = previewZoom >= MAX_PREVIEW_ZOOM;
 }
 
+function handlePreviewWheel(event) {
+  if (!isPreviewZoomTouchEnabled()) {
+    return;
+  }
+
+  const wheelDirection = Math.sign(event.deltaY);
+  if (wheelDirection === 0) {
+    return;
+  }
+
+  changePreviewZoom(wheelDirection < 0 ? PREVIEW_ZOOM_STEP : -PREVIEW_ZOOM_STEP);
+  event.preventDefault();
+}
+
+function handlePreviewPointerDown(event) {
+  if (!canDragPreview(event)) {
+    return;
+  }
+
+  isPreviewDragging = true;
+  previewDragStartX = event.clientX;
+  previewDragStartY = event.clientY;
+  previewDragStartScrollLeft = preview.scrollLeft;
+  previewDragStartScrollTop = preview.scrollTop;
+  preview.classList.add('is-dragging');
+  preview.setPointerCapture(event.pointerId);
+  event.preventDefault();
+}
+
+function handlePreviewPointerMove(event) {
+  if (!isPreviewDragging) {
+    return;
+  }
+
+  const deltaX = event.clientX - previewDragStartX;
+  const deltaY = event.clientY - previewDragStartY;
+  preview.scrollLeft = previewDragStartScrollLeft - deltaX;
+  preview.scrollTop = previewDragStartScrollTop - deltaY;
+  event.preventDefault();
+}
+
+function handlePreviewPointerUp(event) {
+  if (!isPreviewDragging) {
+    return;
+  }
+
+  isPreviewDragging = false;
+  preview.classList.remove('is-dragging');
+  if (event.pointerId !== undefined && preview.hasPointerCapture(event.pointerId)) {
+    preview.releasePointerCapture(event.pointerId);
+  }
+}
+
+function canDragPreview(event) {
+  if (!isPreviewZoomTouchEnabled() || event.pointerType === 'touch' || event.button !== 0) {
+    return false;
+  }
+
+  if (event.target instanceof Element && event.target.closest('a, button, input, select, textarea, label')) {
+    return false;
+  }
+
+  return preview.scrollWidth > preview.clientWidth || preview.scrollHeight > preview.clientHeight;
+}
+
+function handlePreviewTouchStart(event) {
+  if (!isPreviewPinchGesture(event)) {
+    return;
+  }
+
+  isPreviewPinching = true;
+  previewPinchStartDistance = getTouchDistance(event.touches[0], event.touches[1]);
+  previewPinchStartZoom = previewZoom;
+  event.preventDefault();
+}
+
+function handlePreviewTouchMove(event) {
+  if (!isPreviewPinching || !isPreviewPinchGesture(event)) {
+    return;
+  }
+
+  const nextDistance = getTouchDistance(event.touches[0], event.touches[1]);
+  if (previewPinchStartDistance <= 0 || nextDistance <= 0) {
+    return;
+  }
+
+  const scale = nextDistance / previewPinchStartDistance;
+  setPreviewZoom(Math.round(previewPinchStartZoom * scale));
+  event.preventDefault();
+}
+
+function handlePreviewTouchEnd(event) {
+  if (event.touches.length >= 2) {
+    previewPinchStartDistance = getTouchDistance(event.touches[0], event.touches[1]);
+    previewPinchStartZoom = previewZoom;
+    return;
+  }
+
+  isPreviewPinching = false;
+  previewPinchStartDistance = 0;
+}
+
+function isPreviewPinchGesture(event) {
+  return isPreviewZoomTouchEnabled() && event.touches.length >= 2;
+}
+
+function isPreviewZoomTouchEnabled() {
+  return document.body.classList.contains('is-fullscreen') && allPages.length > 0;
+}
+
+function getTouchDistance(firstTouch, secondTouch) {
+  const deltaX = secondTouch.clientX - firstTouch.clientX;
+  const deltaY = secondTouch.clientY - firstTouch.clientY;
+  return Math.hypot(deltaX, deltaY);
+}
+
 function syncPreviewToolbar() {
   const hasPages = allPages.length > 0;
-  previewToolbar.style.display = hasPages ? 'flex' : 'none';
+  previewToolbar.style.display = hasPages ? '' : 'none';
 }
 
 function supportsNativeFullscreen() {
