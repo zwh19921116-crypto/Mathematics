@@ -6,6 +6,7 @@
 const generateBtn      = document.getElementById('generateBtn');
 const refreshBtn       = document.getElementById('refreshBtn');
 const printBtn         = document.getElementById('printBtn');
+const fullscreenBtn    = document.getElementById('fullscreenBtn');
 const preview          = document.getElementById('worksheetPreview');
 const pagination       = document.getElementById('pagination');
 const prevBtn          = document.getElementById('prevBtn');
@@ -323,9 +324,33 @@ printBtn.addEventListener('click', () => {
 });
 prevBtn.addEventListener('click', () => showPage(currentPage - 1));
 nextBtn.addEventListener('click', () => showPage(currentPage + 1));
+fullscreenBtn.addEventListener('click', toggleFullscreenMode);
 
 window.addEventListener('beforeprint', preparePreviewForPrint);
 window.addEventListener('afterprint', restorePreviewAfterPrint);
+document.addEventListener('fullscreenchange', syncFullscreenUI);
+
+syncFullscreenUI();
+
+async function toggleFullscreenMode() {
+  try {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      return;
+    }
+
+    await document.exitFullscreen();
+  } catch (error) {
+    alert('Fullscreen is not available in this browser.');
+  }
+}
+
+function syncFullscreenUI() {
+  const isFullscreen = Boolean(document.fullscreenElement);
+  document.body.classList.toggle('is-fullscreen', isFullscreen);
+  fullscreenBtn.textContent = isFullscreen ? 'Exit Fullscreen' : 'Fullscreen';
+  fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
+}
 
 function generateWorksheet() {
   const module      = moduleSelect.value;

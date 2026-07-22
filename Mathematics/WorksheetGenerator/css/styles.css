@@ -20,31 +20,32 @@ body {
 header {
   background: #2b6cb0;
   color: #fff;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 0;
   text-align: left;
 }
 
 .header-brand {
+  width: 100%;
   max-width: 1200px;
+  padding: 0 1.25rem;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.9rem;
+  justify-content: flex-start;
+  gap: 1rem;
 }
 
 .header-logo {
-  width: 56px;
-  height: 56px;
+  width: auto;
+  height: 96px;
   object-fit: contain;
   flex: 0 0 auto;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.16);
-  padding: 0.3rem;
+  max-width: 260px;
 }
 
 .header-text {
   text-align: left;
+  margin-left: 1.5rem;
 }
 
 header h1 {
@@ -68,11 +69,13 @@ header .subtitle {
 
   .header-text {
     text-align: center;
+    margin-left: 0;
   }
 
   .header-logo {
-    width: 52px;
-    height: 52px;
+    width: auto;
+    height: 74px;
+    max-width: 220px;
   }
 }
 
@@ -261,6 +264,33 @@ main {
   font-size: 1rem;
   text-align: center;
   margin-top: 4rem;
+}
+
+/* ---- Fullscreen Mode ---- */
+body.is-fullscreen {
+  background: #d7deea;
+}
+
+body.is-fullscreen header {
+  display: none;
+}
+
+body.is-fullscreen main {
+  max-width: none;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+body.is-fullscreen .controls {
+  position: static;
+  top: auto;
+}
+
+body.is-fullscreen .preview {
+  min-height: calc(100vh - 3.75rem);
 }
 
 /* ---- A4 Page ---- */
