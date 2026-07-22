@@ -238,6 +238,8 @@ let titleTouched = false;
 let isPrintPreviewActive = false;
 let pageBeforePrint = 0;
 let lastRenderedTitle = '';
+let isFullscreenFallbackActive = false;
+let scrollPositionBeforeFullscreen = 0;
 
 moduleSelect.addEventListener('change', () => {
   populateTopics();
@@ -329,27 +331,95 @@ fullscreenBtn.addEventListener('click', toggleFullscreenMode);
 window.addEventListener('beforeprint', preparePreviewForPrint);
 window.addEventListener('afterprint', restorePreviewAfterPrint);
 document.addEventListener('fullscreenchange', syncFullscreenUI);
+document.addEventListener('webkitfullscreenchange', syncFullscreenUI);
 
 syncFullscreenUI();
 
 async function toggleFullscreenMode() {
+  const fullscreenElement = getFullscreenElement();
+
   try {
-    if (!document.fullscreenElement) {
-      await document.documentElement.requestFullscreen();
+    if (!fullscreenElement && supportsNativeFullscreen()) {
+      await enterNativeFullscreen();
       return;
     }
 
-    await document.exitFullscreen();
+    if (fullscreenElement) {
+      await exitNativeFullscreen();
+      return;
+    }
+
+    setFullscreenFallbackActive(!isFullscreenFallbackActive);
+    syncFullscreenUI();
   } catch (error) {
-    alert('Fullscreen is not available in this browser.');
+    setFullscreenFallbackActive(!isFullscreenFallbackActive);
+    syncFullscreenUI();
   }
 }
 
 function syncFullscreenUI() {
-  const isFullscreen = Boolean(document.fullscreenElement);
+  const hasNativeFullscreen = Boolean(getFullscreenElement());
+  const isFullscreen = hasNativeFullscreen || isFullscreenFallbackActive;
   document.body.classList.toggle('is-fullscreen', isFullscreen);
+  document.body.classList.toggle('is-fullscreen-fallback', isFullscreenFallbackActive && !hasNativeFullscreen);
   fullscreenBtn.textContent = isFullscreen ? 'Exit Fullscreen' : 'Fullscreen';
   fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
+}
+
+function setFullscreenFallbackActive(nextValue) {
+  const shouldActivate = Boolean(nextValue);
+  if (shouldActivate === isFullscreenFallbackActive) {
+    return;
+  }
+
+  isFullscreenFallbackActive = shouldActivate;
+
+  if (shouldActivate) {
+    scrollPositionBeforeFullscreen = window.scrollY || window.pageYOffset || 0;
+    document.body.style.top = `-${scrollPositionBeforeFullscreen}px`;
+    return;
+  }
+
+  document.body.style.top = '';
+  window.scrollTo(0, scrollPositionBeforeFullscreen);
+}
+
+function supportsNativeFullscreen() {
+  const root = document.documentElement;
+  return Boolean(
+    root.requestFullscreen
+    || root.webkitRequestFullscreen
+    || document.exitFullscreen
+    || document.webkitExitFullscreen
+  );
+}
+
+function getFullscreenElement() {
+  return document.fullscreenElement || document.webkitFullscreenElement || null;
+}
+
+async function enterNativeFullscreen() {
+  const root = document.documentElement;
+
+  if (root.requestFullscreen) {
+    await root.requestFullscreen();
+    return;
+  }
+
+  if (root.webkitRequestFullscreen) {
+    await root.webkitRequestFullscreen();
+  }
+}
+
+async function exitNativeFullscreen() {
+  if (document.exitFullscreen) {
+    await document.exitFullscreen();
+    return;
+  }
+
+  if (document.webkitExitFullscreen) {
+    await document.webkitExitFullscreen();
+  }
 }
 
 function generateWorksheet() {
